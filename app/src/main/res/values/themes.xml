@@ -1,0 +1,21 @@
+<resources>
+    <style name="Theme.GrindHouse" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#6c5ce7</item>
+        <item name="colorPrimaryDark">#0a0a0f</item>
+        <item name="colorAccent">#6c5ce7</item>
+        <item name="android:windowBackground">#0a0a0f</item>
+    </style>
+
+    <style name="Theme.GrindHouse.Blocked" parent="Theme.GrindHouse">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="DurationButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">6dp</item>
+        <item name="android:backgroundTint">#1a1a24</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+</resources>

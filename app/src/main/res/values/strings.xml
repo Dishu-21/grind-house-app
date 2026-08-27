@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Grind House</string>
+    <string name="accessibility_service_description">Lets Grind House detect when a blocked app is opened during a focus session and redirect you back.</string>
+</resources>
