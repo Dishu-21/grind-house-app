@@ -40,6 +40,11 @@
             android:id="@+id/duration90"
             style="@style/DurationButton"
             android:text="90 min" />
+        <Button
+            android:id="@+id/durationCustom"
+            style="@style/DurationButton"
+            android:layout_marginEnd="0dp"
+            android:text="Custom" />
     </LinearLayout>
 
     <TextView
