@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -33,7 +34,7 @@ class FocusModeActivity : AppCompatActivity() {
 
         setupDurationButtons()
 
-        binding.startFocusBtn.setOnClickListener { onStartClicked() }
+        binding.startFocusBtn.setOnClickListener { onStartOrEndClicked() }
         updateStatusText()
     }
 
@@ -42,18 +43,70 @@ class FocusModeActivity : AppCompatActivity() {
         updateStatusText()
     }
 
+    private fun tintButton(btn: android.widget.Button, selected: Boolean) {
+        btn.isSelected = selected
+        btn.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            android.graphics.Color.parseColor(if (selected) "#6c5ce7" else "#1a1a24")
+        )
+    }
+
     private fun setupDurationButtons() {
-        val buttons = mapOf(
+        val presetButtons = mapOf(
             binding.duration25 to 25,
             binding.duration50 to 50,
             binding.duration90 to 90
         )
-        fun select(minutes: Int) {
+        fun selectPreset(minutes: Int) {
             selectedMinutes = minutes
-            buttons.forEach { (btn, m) -> btn.isSelected = (m == minutes) }
+            presetButtons.keys.forEach { tintButton(it, false) }
+            presetButtons.forEach { (btn, m) -> if (m == minutes) tintButton(btn, true) }
+            tintButton(binding.durationCustom, false)
+            binding.durationCustom.text = "Custom"
         }
-        buttons.forEach { (btn, minutes) -> btn.setOnClickListener { select(minutes) } }
-        select(25)
+        presetButtons.forEach { (btn, minutes) -> btn.setOnClickListener { selectPreset(minutes) } }
+        binding.durationCustom.setOnClickListener { showCustomDurationDialog() }
+        selectPreset(25)
+    }
+
+    private fun showCustomDurationDialog() {
+        val input = EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            hint = "Minutes (e.g. 45)"
+            setPadding(48, 32, 48, 32)
+        }
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Custom duration")
+            .setView(input)
+            .setPositiveButton("Set") { _, _ ->
+                val minutes = input.text.toString().toIntOrNull()
+                if (minutes == null || minutes <= 0) {
+                    Toast.makeText(this, "Enter a valid number of minutes", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                selectedMinutes = minutes
+                listOf(binding.duration25, binding.duration50, binding.duration90).forEach { tintButton(it, false) }
+                tintButton(binding.durationCustom, true)
+                binding.durationCustom.text = "$minutes min"
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun onStartOrEndClicked() {
+        if (FocusSessionManager.isActive(this)) {
+            endActiveSession()
+            return
+        }
+        onStartClicked()
+    }
+
+    private fun endActiveSession() {
+        val endIntent = Intent(this, FocusForegroundService::class.java).apply {
+            action = FocusForegroundService.ACTION_END
+        }
+        startService(endIntent)
+        Toast.makeText(this, "Focus session ended", Toast.LENGTH_SHORT).show()
+        updateStatusText()
     }
 
     private fun onStartClicked() {
@@ -77,20 +130,23 @@ class FocusModeActivity : AppCompatActivity() {
         if (FocusSessionManager.isActive(this)) {
             val minutesLeft = (FocusSessionManager.remainingMillis(this) / 60_000L).toInt()
             binding.statusText.text = "Session active - $minutesLeft min left"
-            binding.startFocusBtn.text = "Session already running"
+            binding.startFocusBtn.text = "End Focus Session"
+            binding.startFocusBtn.backgroundTintList =
+                android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#e74c3c"))
         } else {
             binding.statusText.text = "No active session"
             binding.startFocusBtn.text = "Start Focus Session"
+            binding.startFocusBtn.backgroundTintList =
+                android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6c5ce7"))
         }
     }
 
-    /** Apps with a LAUNCHER activity are visible without any special permission (Android 11+ package visibility exemption). */
     private fun loadLaunchableApps(): List<InstalledApp> {
         val pm = packageManager
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
         val resolved = pm.queryIntentActivities(intent, PackageManager.MATCH_ALL)
         return resolved
-            .filter { it.activityInfo.packageName != packageName } // never let it block itself
+            .filter { it.activityInfo.packageName != packageName }
             .distinctBy { it.activityInfo.packageName }
             .map {
                 InstalledApp(
@@ -118,9 +174,12 @@ class FocusModeActivity : AppCompatActivity() {
     private fun promptEnableAccessibilityService() {
         Toast.makeText(
             this,
-            "Turn on Grind House Focus under Accessibility settings, then come back and hit Start again",
+            "One-time setup: tap ⋮ (top-right) → \"Allow restricted settings\", then come back and hit Start again",
             Toast.LENGTH_LONG
         ).show()
-        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", packageName, null)
+        }
+        startActivity(intent)
     }
 }
