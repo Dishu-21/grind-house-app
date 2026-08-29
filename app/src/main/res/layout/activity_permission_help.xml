@@ -33,7 +33,7 @@
             <TextView style="@style/HelpStepNumber" android:text="1" />
             <LinearLayout style="@style/HelpStepTextWrap">
                 <TextView style="@style/HelpStepTitle" android:text="Tap the button below" />
-                <TextView style="@style/HelpStepDesc" android:text="It opens your phone's full list of installed apps." />
+                <TextView style="@style/HelpStepDesc" android:text="It opens your phone's full list of installed apps. Then Click on Show all app Including System" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout style="@style/HelpStepRow">
