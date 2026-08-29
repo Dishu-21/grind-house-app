@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -69,24 +68,34 @@ class FocusModeActivity : AppCompatActivity() {
     }
 
     private fun showCustomDurationDialog() {
-        val input = EditText(this).apply {
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            hint = "Minutes (e.g. 45)"
-            setPadding(48, 32, 48, 32)
-        }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_custom_duration, null)
+        val hoursPicker = dialogView.findViewById<android.widget.NumberPicker>(R.id.hoursPicker)
+        val minutesPicker = dialogView.findViewById<android.widget.NumberPicker>(R.id.minutesPicker)
+
+        hoursPicker.minValue = 0
+        hoursPicker.maxValue = 4
+        hoursPicker.value = selectedMinutes / 60
+
+        minutesPicker.minValue = 0
+        minutesPicker.maxValue = 59
+        minutesPicker.value = selectedMinutes % 60
+        minutesPicker.setFormatter { String.format("%02d", it) }
+
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Custom duration")
-            .setView(input)
+            .setView(dialogView)
             .setPositiveButton("Set") { _, _ ->
-                val minutes = input.text.toString().toIntOrNull()
-                if (minutes == null || minutes <= 0) {
-                    Toast.makeText(this, "Enter a valid number of minutes", Toast.LENGTH_SHORT).show()
+                val minutes = hoursPicker.value * 60 + minutesPicker.value
+                if (minutes <= 0) {
+                    Toast.makeText(this, "Pick a duration longer than 0 minutes", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
                 selectedMinutes = minutes
                 listOf(binding.duration25, binding.duration50, binding.duration90).forEach { tintButton(it, false) }
                 tintButton(binding.durationCustom, true)
-                binding.durationCustom.text = "$minutes min"
+                val h = minutes / 60
+                val m = minutes % 60
+                binding.durationCustom.text = if (h > 0) "${h}h ${m}m" else "${m}m"
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -143,18 +152,18 @@ class FocusModeActivity : AppCompatActivity() {
 
     private fun loadLaunchableApps(): List<InstalledApp> {
         val pm = packageManager
-        val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-        val resolved = pm.queryIntentActivities(intent, PackageManager.MATCH_ALL)
-        return resolved
-            .filter { it.activityInfo.packageName != packageName }
-            .distinctBy { it.activityInfo.packageName }
+        val installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+        return installedApps
+            .filter { it.packageName != packageName }
+            .filter { pm.getLaunchIntentForPackage(it.packageName) != null }
             .map {
                 InstalledApp(
-                    packageName = it.activityInfo.packageName,
+                    packageName = it.packageName,
                     label = it.loadLabel(pm).toString(),
                     icon = it.loadIcon(pm)
                 )
             }
+            .distinctBy { it.packageName }
             .sortedBy { it.label.lowercase() }
     }
 
