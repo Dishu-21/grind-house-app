@@ -3,20 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0a0a0f">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🔒"
             android:textSize="40sp"
             android:layout_marginBottom="8dp" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +22,6 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_marginBottom="6dp" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,39 +29,41 @@
             android:textColor="#9d9db0"
             android:textSize="14sp"
             android:layout_marginBottom="24dp" />
-
         <LinearLayout style="@style/HelpStepRow">
             <TextView style="@style/HelpStepNumber" android:text="1" />
             <LinearLayout style="@style/HelpStepTextWrap">
                 <TextView style="@style/HelpStepTitle" android:text="Tap the button below" />
-                <TextView style="@style/HelpStepDesc" android:text="It opens Grind House Focus's own Settings page directly." />
+                <TextView style="@style/HelpStepDesc" android:text="It opens your phone's full list of installed apps." />
             </LinearLayout>
         </LinearLayout>
-
         <LinearLayout style="@style/HelpStepRow">
             <TextView style="@style/HelpStepNumber" android:text="2" />
+            <LinearLayout style="@style/HelpStepTextWrap">
+                <TextView style="@style/HelpStepTitle" android:text="Find &quot;Grind House Focus&quot;" />
+                <TextView style="@style/HelpStepDesc" android:text="Tap it in that list to open its app info page." />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout style="@style/HelpStepRow">
+            <TextView style="@style/HelpStepNumber" android:text="3" />
             <LinearLayout style="@style/HelpStepTextWrap">
                 <TextView style="@style/HelpStepTitle" android:text="Find the ⋮ menu" />
                 <TextView style="@style/HelpStepDesc" android:text="Usually top-right of that page. Exact spot varies slightly by phone brand." />
             </LinearLayout>
         </LinearLayout>
-
         <LinearLayout style="@style/HelpStepRow">
-            <TextView style="@style/HelpStepNumber" android:text="3" />
+            <TextView style="@style/HelpStepNumber" android:text="4" />
             <LinearLayout style="@style/HelpStepTextWrap">
                 <TextView style="@style/HelpStepTitle" android:text="Tap &quot;Allow restricted settings&quot;" />
                 <TextView style="@style/HelpStepDesc" android:text="This unlocks the permission toggle. You may need to confirm once more." />
             </LinearLayout>
         </LinearLayout>
-
         <LinearLayout style="@style/HelpStepRow">
-            <TextView style="@style/HelpStepNumber" android:text="4" />
+            <TextView style="@style/HelpStepNumber" android:text="5" />
             <LinearLayout style="@style/HelpStepTextWrap">
                 <TextView style="@style/HelpStepTitle" android:text="Come back and hit Start" />
                 <TextView style="@style/HelpStepDesc" android:text="Focus Mode will work from here on - this screen won't show up again." />
             </LinearLayout>
         </LinearLayout>
-
         <Button
             android:id="@+id/openSettingsBtn"
             android:layout_width="match_parent"
@@ -74,8 +72,16 @@
             android:backgroundTint="#6c5ce7"
             android:textColor="#ffffff"
             android:textAllCaps="false"
-            android:text="Open App Settings" />
-
+            android:text="Open App List" />
+        <Button
+            android:id="@+id/directAccessibilityBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#1a1a24"
+            android:textColor="#9d9db0"
+            android:textAllCaps="false"
+            android:text="I already see an Accessibility toggle" />
         <Button
             android:id="@+id/notNowBtn"
             android:layout_width="match_parent"
@@ -85,6 +91,5 @@
             android:textColor="#9d9db0"
             android:textAllCaps="false"
             android:text="Not now" />
-
     </LinearLayout>
 </ScrollView>
