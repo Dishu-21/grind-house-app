@@ -36,6 +36,11 @@
             android:label="Focus Mode" />
 
         <activity
+            android:name=".PermissionHelpActivity"
+            android:exported="false"
+            android:label="Permission Setup" />
+
+        <activity
             android:name=".BlockedActivity"
             android:exported="false"
             android:label="Blocked"
