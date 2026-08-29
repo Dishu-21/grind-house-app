@@ -3,7 +3,6 @@ package com.grindhouse.focus
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -181,14 +180,6 @@ class FocusModeActivity : AppCompatActivity() {
     }
 
     private fun promptEnableAccessibilityService() {
-        Toast.makeText(
-            this,
-            "One-time setup: tap ⋮ (top-right) → \"Allow restricted settings\", then come back and hit Start again",
-            Toast.LENGTH_LONG
-        ).show()
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", packageName, null)
-        }
-        startActivity(intent)
+        startActivity(Intent(this, PermissionHelpActivity::class.java))
     }
 }
